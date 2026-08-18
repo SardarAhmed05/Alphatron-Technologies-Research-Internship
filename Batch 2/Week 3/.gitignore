@@ -1,0 +1,24 @@
+# Environment & Secret Keys
+.env
+*.env
+
+# Python Bytecode & Caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Vector DB & Local Storage
+chroma_db/
+.streamlit/config.toml
+
+# IDE & OS Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

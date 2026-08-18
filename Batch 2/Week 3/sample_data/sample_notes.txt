@@ -1,0 +1,16 @@
+=== Alphatron Technologies RAG Guidelines ===
+Project Name: Advanced AI RAG Chatbot
+Version: 1.0.0
+Release Date: August 2026
+
+System Architecture Overview:
+The AI Chatbot uses Retrieval-Augmented Generation (RAG) to answer questions accurately based on custom document collections. It supports four core document types: PDF, DOCX, TXT, and Excel/CSV spreadsheets.
+
+Vector Storage:
+ChromaDB is used as the primary persistent vector database. Document chunks are embedded using sentence-transformers (all-MiniLM-L6-v2) or Google Gemini.
+
+Key Specifications:
+- Target Chunk Size: 1000 characters
+- Target Chunk Overlap: 200 characters
+- Top-K Retrieval: 4 chunks per query
+- System Lead: Lead RAG Architect Alice Smith with a target latency of < 500ms.

@@ -1,0 +1,6 @@
+EmployeeID,Name,Department,Role,Salary,Project
+E101,Alice Smith,Engineering,Lead RAG Architect,120000,Project Antigravity
+E102,Bob Jones,Data Science,ML Engineer,95000,Project Vector
+E103,Carol White,Product,Product Manager,110000,Project Antigravity
+E104,David Black,DevOps,Cloud Architect,105000,Project Infrastructure
+E105,Eva Green,Engineering,Backend Developer,88000,Project Vector
