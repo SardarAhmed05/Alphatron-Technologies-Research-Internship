@@ -43,80 +43,160 @@ Heart-Disease-Prediction/
 │   ├── model_comparison_results.csv
 │   └── model_accuracy_comparison.png
 │
-├── Step_1_DataPreparation.py              # Ingestion, zero-anomaly handling, string cleaning
-├── Step_2_EDA.py                          # Statistical profiling & distribution plots
-├── Step_3_Data_Transformation.py          # Imputation, One-Hot/Binary encoding, StandardScaler
-├── Step_4_FeatureSelection.py             # Feature selection (dropping ca, thal, slope, id)
-├── Step_5_Train_Test_DataSplit.py         # Stratified 80/20 train/test partitioning
-├── Step_6_Model_Training.py               # Fitting baseline LR, RF, and XGBoost models
-├── Step_7_ModelTesting_Performceevaluation.py # Test set evaluation & classification reports
-├── Step_8_DataSampling.py                 # SMOTE class balancing on training data
-├── Step_9_Cross_Validation.py             # 5-Fold Stratified Cross-Validation
-├── Step_10_HyperparameterOptimization.py  # GridSearchCV tuning for XGBoost
-├── Step_11_Model_Comparison.py            # Comparative evaluation & best model export
-├── Main.py                                # Master orchestrator running Steps 1-11
+├── Step_1_DataPreparation.py              # class DataPreparation: Ingestion, anomaly handling, string cleaning
+├── Step_2_EDA.py                          # class ExploratoryDataAnalysis: Statistical profiling & 9 distribution plots
+├── Step_3_Data_Transformation.py          # class DataTransformation: Imputation, One-Hot/Binary encoding, StandardScaler
+├── Step_4_FeatureSelection.py             # class FeatureSelector: Pruning noisy & high-missing cols (ca, thal, slope, id)
+├── Step_5_Train_Test_DataSplit.py         # class DataSplitter: Stratified 80/20 train/test partitioning
+├── Step_6_Model_Training.py               # class ModelTrainer: Fitting baseline LR, RF, and XGBoost models
+├── Step_7_ModelTesting_Performceevaluation.py # class ModelEvaluator: Test set evaluation & classification reports
+├── Step_8_DataSampling.py                 # class DataSampler: SMOTE class balancing on training data
+├── Step_9_Cross_Validation.py             # class CrossValidator: 5-Fold Stratified Cross-Validation
+├── Step_10_HyperparameterOptimization.py  # class HyperparameterOptimizer: GridSearchCV tuning for XGBoost
+├── Step_11_Model_Comparison.py            # class ModelComparator: Comparative evaluation & best model export
+├── Main.py                                # class HeartDiseasePipeline: Master OOP coordinator
 │
-├── HeartDiseasePrediction.ipynb           # Unified interactive master notebook
-├── flowchart_Task1_Sardar_Ahmed_Heart_disease_prediction.pdf # 11-step pipeline flowchart PDF
-├── Report.pdf                             # Formal research report PDF
+├── HeartDiseasePrediction.ipynb           # Unified interactive master notebook (OOP)
+├── flowchart_Task1_Sardar_Ahmed_Heart_disease_prediction.pdf # 11-step OOP pipeline flowchart PDF
+├── Report.pdf                             # Formal research report PDF (OOP Architecture & Benchmarks)
 ├── requirements.txt                       # Curated environment dependencies
 └── heart_disease_uci.csv                  # Raw dataset
 ```
 
 ---
 
-## 🔄 3. 11-Step Machine Learning Pipeline
+## 🏛️ 3. Pure Object-Oriented (OOP) Architecture
+
+The pipeline is engineered with **11 dedicated, single-responsibility Python classes**:
+
+```mermaid
+classDiagram
+    class HeartDiseasePipeline {
+        +DataPreparation step1
+        +ExploratoryDataAnalysis step2
+        +DataTransformation step3
+        +FeatureSelector step4
+        +DataSplitter step5
+        +ModelTrainer step6
+        +ModelEvaluator step7
+        +DataSampler step8
+        +CrossValidator step9
+        +HyperparameterOptimizer step10
+        +ModelComparator step11
+        +run() void
+    }
+
+    class DataPreparation { +load_data() +clean_anomalies() +save_cleaned_data() +run() }
+    class ExploratoryDataAnalysis { +export_summary_statistics() +plot_missing_values() +plot_target_distribution() +run() }
+    class DataTransformation { +impute_missing() +encode_features() +scale_features() +run() }
+    class FeatureSelector { +select_features() +save_selected_features() +run() }
+    class DataSplitter { +load_and_split() +save_splits() +run() }
+    class ModelTrainer { +train_logistic_regression() +train_random_forest() +train_xgboost() +save_models() +run() }
+    class ModelEvaluator { +load_test_data() +evaluate_model() +run() }
+    class DataSampler { +load_data() +resample() +save_resampled_data() +run() }
+    class CrossValidator { +load_data() +evaluate_models() +run() }
+    class HyperparameterOptimizer { +optimize_xgboost() +save_tuned_model() +run() }
+    class ModelComparator { +compare_models() +plot_comparison() +export_champion_model() +run() }
+
+    HeartDiseasePipeline --> DataPreparation
+    HeartDiseasePipeline --> ExploratoryDataAnalysis
+    HeartDiseasePipeline --> DataTransformation
+    HeartDiseasePipeline --> FeatureSelector
+    HeartDiseasePipeline -## 🔄 4. 11-Step Machine Learning Pipeline
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│ Step 1: Data Preparation                                 │
+│ Step 1: class DataPreparation                            │
 │  - Load UCI dataset, handle 0s in [chol, trestbps]       │
 │  - Export: 'Datapreparation/cleaned_heart_disease.csv'   │
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼
 ┌──────────────────────────────────────────────────────────┐
-│ Step 2: Exploratory Data Analysis (EDA)                  │
+│ Step 2: class ExploratoryDataAnalysis                    │
 │  - Profiling, missingness, target balance, correlations  │
 │  - Export: 'EDA/' charts & summary statistics            │
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼
 ┌──────────────────────────────────────────────────────────┐
-│ Step 3: Data Transformation                              │
+│ Step 3: class DataTransformation                         │
 │  - Median/Mode Imputation, OHE, StandardScaler           │
 │  - Export: 'TransformedData/transformed_data.csv'        │
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼
 ┌──────────────────────────────────────────────────────────┐
-│ Step 4: Feature Selection                                │
+│ Step 4: class FeatureSelector                            │
 │  - Drop non-predictive [id] & high-missing [ca,thal,slope]│
 │  - Export: 'TransformedData/selected_features_data.csv'  │
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼
 ┌──────────────────────────────────────────────────────────┐
-│ Step 5: Stratified Train / Test Split                    │
+│ Step 5: class DataSplitter                               │
 │  - 80% Train (736 samples) / 20% Test (184 samples)      │
 │  - Export: X_train, X_test, y_train, y_test              │
 └──────────────┬─────────────────────────────┬─────────────┘
                │                             │
                ▼ (Train Set)                 ▼ (Test Set - Unseen)
 ┌──────────────────────────────┐             │
-│ Step 6: Baseline Training    │             │
+│ Step 6: class ModelTrainer   │             │
 │  - Fit LR, RF, XGBoost       │             │
 │  - Export: 'Models/'         │             │
 └──────────────┬───────────────┘             │
                │                             │
                ▼                             │
 ┌──────────────────────────────┐             │
-│ Step 7: Baseline Testing     │             │
+│ Step 7: class ModelEvaluator │             │
 │  - Accuracy, F1, Report      │             │
 └──────────────┬───────────────┘             │
                │                             │
                ▼                             │
 ┌──────────────────────────────┐             │
+│ Step 8: class DataSampler    │             │
+│  - Balance minority (SMOTE)  │             │
+│  - Export: X_train_sampled   │             │
+└──────────────┬───────────────┘             │
+               │                             │
+               ▼                             │
+┌──────────────────────────────┐             │
+│ Step 9: class CrossValidator │             │
+│  - StratifiedKFold checking  │             │
+└──────────────┬───────────────┘             │
+               │                             │
+               ▼                             │
+┌──────────────────────────────┐             │
+│ Step 10: HyperparameterOpt   │             │
+│  - Tune XGBoost depth & lr   │             │
+│  - Export: 'tuned_xgboost'   │             │
+└──────────────┬───────────────┘             │
+               │                             │
+               ▼                             ▼
+┌────────────────────────────────────────────┴─────────────┐
+│ Step 11: class ModelComparator                           │
+│  - Compare all models on unseen test data                │
+│  - Export: 'model_comparison_results.csv',               │
+│            'model_accuracy_comparison.png',              │
+│            'Models/best_model.pkl'                       │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📊 5. Experimental Results
+
+| Model Architecture | Training Strategy | Test Accuracy | Macro F1 | Weighted F1 |
+| :--- | :--- | :---: | :---: | :---: |
+| **Logistic Regression (Baseline)** | Original Split | **60.87%** | **0.3662** | **0.5801** |
+| **Random Forest (Baseline)** | Original Split | 57.07% | 0.2752 | 0.5077 |
+| **XGBoost (Baseline)** | Original Split | 60.33% | 0.3855 | 0.5859 |
+| **XGBoost (Tuned + SMOTE)** | SMOTE Resampled | 56.52% | **0.4173** | 0.5787 |
+
+---
+
+## 🛠️ 6. Quick Start & Execution
+��────────────────────┐             │
 │ Step 8: Data Sampling (SMOTE)│             │
 │  - Balance minority classes  │             │
 │  - Export: X_train_sampled   │             │
