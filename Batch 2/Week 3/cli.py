@@ -1,12 +1,12 @@
 import os
-from src.loaders import DocumentIngestor
-from src.vectorstore import VectorStoreManager
-from src.rag_chain import ConversationalRAGChain
+from Step_1_DocumentIngestion import DocumentIngestionPipeline
+from Step_3_VectorStoreManager import VectorStoreManager
+from Step_4_RAGPipeline import ConversationalRAGPipeline
 
 
 def run_cli():
     print("=" * 60)
-    print("      🤖 Multi-Format Conversational RAG AI Chatbot       ")
+    print("   🤖 Multi-Format Conversational RAG AI Chatbot (OOP)   ")
     print("=" * 60)
 
     vector_manager = VectorStoreManager()
@@ -19,7 +19,7 @@ def run_cli():
     print("  exit / quit     - Exit chatbot")
     print("-" * 60)
 
-    rag_chain = ConversationalRAGChain(vector_manager)
+    rag_pipeline = ConversationalRAGPipeline(vector_manager=vector_manager)
 
     while True:
         try:
@@ -40,11 +40,11 @@ def run_cli():
                 if not os.path.exists(path):
                     print(f"Error: Path '{path}' does not exist.")
                     continue
-                ingestor = DocumentIngestor()
+                ingest_pipe = DocumentIngestionPipeline()
                 if os.path.isdir(path):
-                    docs = ingestor.load_directory(path)
+                    docs = ingest_pipe.load_directory(path)
                 else:
-                    docs = ingestor.load_file(path)
+                    docs = ingest_pipe.load_single_file(path)
                 added = vector_manager.add_documents(docs)
                 print(f"Successfully indexed {added} chunks into ChromaDB!")
                 continue
@@ -55,12 +55,12 @@ def run_cli():
                 continue
 
             if user_input == "/reset_memory":
-                rag_chain.clear_history()
+                rag_pipeline.clear_history()
                 print("Conversation history reset.")
                 continue
 
             # Process RAG Question
-            response = rag_chain.answer_question(user_input)
+            response = rag_pipeline.answer_question(user_input)
             print(f"\nAI > {response['answer']}")
 
             if response["sources"]:

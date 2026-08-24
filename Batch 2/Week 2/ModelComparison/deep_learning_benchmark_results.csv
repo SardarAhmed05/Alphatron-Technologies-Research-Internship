@@ -1,0 +1,5 @@
+model_name,domain,architecture,parameters,test_accuracy,test_loss,training_time_sec,epochs,batch_size
+Artificial Neural Network (ANN),Computer Vision (MNIST),MLP (Flatten -> Dense 128 -> Dense 64 -> Dense 10),109386,0.9729999899864197,0.11493126302957535,28.384357929229736,10,32
+Convolutional Neural Network (CNN),Computer Vision (MNIST),Conv2D (32) -> Pool -> Conv2D (64) -> Pool -> Dense (128) -> Dropout (0.5) -> Softmax,225034,0.9922000169754028,0.02719789184629917,95.5281810760498,10,64
+Recurrent Neural Network (SimpleRNN),Natural Language Processing (IMDB),Embedding (32d) -> SimpleRNN (64) -> Sigmoid,326273,0.721560001373291,0.560462236404419,32.747984409332275,5,64
+Long Short-Term Memory (LSTM),Natural Language Processing (IMDB),Embedding (64d) -> LSTM (64) -> Sigmoid,673089,0.8485199809074402,0.4169047772884369,119.59870076179504,5,64

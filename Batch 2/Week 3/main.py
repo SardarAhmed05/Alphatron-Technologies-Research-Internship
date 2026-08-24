@@ -1,58 +1,66 @@
+"""
+Master Conversational RAG Pipeline Orchestrator (OOP Standard)
+Integrates and executes all 5 modular OOP steps sequentially.
+"""
+
 import sys
-import argparse
-from src.loaders import DocumentIngestor
-from src.vectorstore import VectorStoreManager
-from src.rag_chain import ConversationalRAGChain
+from Step_1_DocumentIngestion import DocumentIngestionPipeline
+from Step_2_EmbeddingFactory import EmbeddingModelFactory
+from Step_3_VectorStoreManager import VectorStoreManager
+from Step_4_RAGPipeline import ConversationalRAGPipeline
+from Step_5_RAGEvaluator import RAGEvaluationPipeline
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Multi-Format RAG AI Chatbot CLI")
-    parser.add_argument(
-        "--ingest",
-        type=str,
-        help="Path to a document file or directory to ingest into ChromaDB",
-    )
-    parser.add_argument(
-        "--query",
-        type=str,
-        help="Ask a single question to the chatbot",
-    )
-    parser.add_argument(
-        "--clear",
-        action="store_true",
-        help="Clear the vector database index",
-    )
-    args = parser.parse_args()
+class RAGBotMasterPipeline:
+    """
+    Master Object-Oriented Pipeline Orchestrator that connects all 5 modular steps:
+      - Step 1: Multi-Format Document Ingestion & Chunking
+      - Step 2: Vector Embedding Model Initialization
+      - Step 3: ChromaDB Vector Indexing & Search
+      - Step 4: Conversational RAG QA & Memory Chain
+      - Step 5: System Evaluation & Latency Benchmarking
+    """
 
-    vector_manager = VectorStoreManager()
+    def __init__(self, sample_dir: str = "sample_data"):
+        self.sample_dir = sample_dir
+        self.step1_ingestion = DocumentIngestionPipeline(sample_dir=self.sample_dir)
+        self.step2_embeddings = EmbeddingModelFactory()
+        self.step3_vectorstore = VectorStoreManager()
+        self.step4_rag = ConversationalRAGPipeline(vector_manager=self.step3_vectorstore)
+        self.step5_evaluator = RAGEvaluationPipeline(
+            vector_manager=self.step3_vectorstore,
+            rag_pipeline=self.step4_rag
+        )
 
-    if args.clear:
-        vector_manager.clear_database()
-        print("Successfully cleared ChromaDB vector index.")
-        return
+    def run(self):
+        """Executes all 5 pipeline steps sequentially."""
+        print("\n" + "#" * 65)
+        print("   MULTI-FORMAT CONVERSATIONAL RAG AI CHATBOT (5-STEP OOP PIPELINE)")
+        print("#" * 65)
 
-    if args.ingest:
-        ingestor = DocumentIngestor()
-        print(f"Ingesting documents from: {args.ingest}")
-        import os
+        # Step 1: Load and parse documents
+        raw_docs = self.step1_ingestion.run()
 
-        if os.path.isdir(args.ingest):
-            docs = ingestor.load_directory(args.ingest)
+        # Step 2: Initialize embedding factory
+        self.step2_embeddings.run()
+
+        # Step 3: Index documents into ChromaDB
+        if raw_docs:
+            self.step3_vectorstore.run(sample_docs=raw_docs)
         else:
-            docs = ingestor.load_file(args.ingest)
+            self.step3_vectorstore.run()
 
-        count = vector_manager.add_documents(docs)
-        print(f"Successfully indexed {count} text chunks into ChromaDB!")
+        # Step 4: Execute sample RAG chat QA interaction
+        self.step4_rag.run(test_query="What document formats are supported by this system?")
 
-    if args.query:
-        rag_chain = ConversationalRAGChain(vector_manager)
-        result = rag_chain.answer_question(args.query)
-        print("\n=== Answer ===")
-        print(result["answer"])
-        print("\n=== Sources ===")
-        for s in result["sources"]:
-            print(f"- {s['file_name']} (Type: {s['file_type']})")
+        # Step 5: Execute system evaluation & latency benchmarks
+        self.step5_evaluator.run()
+
+        print("\n" + "#" * 65)
+        print("   ALL 5 RAG PIPELINE STEPS EXECUTED AND COMPLETED SUCCESSFULLY!")
+        print("#" * 65 + "\n")
 
 
 if __name__ == "__main__":
-    main()
+    master_pipeline = RAGBotMasterPipeline()
+    master_pipeline.run()

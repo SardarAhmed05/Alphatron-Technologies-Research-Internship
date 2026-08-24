@@ -1,38 +1,45 @@
-# 🤖 Multi-Format Conversational RAG AI Chatbot
+# 🤖 Multi-Format Conversational RAG AI Chatbot (OOP Standard)
 
-An intermediate/production-grade Conversational Retrieval-Augmented Generation (RAG) AI Chatbot built using **LangChain**, **ChromaDB**, and **LLMs (Google Gemini / OpenAI / HuggingFace)** with support for **PDF, DOCX, TXT, and Excel/CSV** document formats.
+An intermediate/production-grade Conversational Retrieval-Augmented Generation (RAG) AI Chatbot built using **LangChain**, **ChromaDB**, and **LLMs (Google Gemini / OpenAI / HuggingFace)** with support for **PDF, DOCX, TXT, and Excel/CSV** document formats. Fully refactored into a modular **5-Step Object-Oriented Pipeline** architecture.
 
 ---
 
 ## 🌟 Key Features
 
+- **5-Step OOP Modular Pipeline**: Structured into 5 self-contained, object-oriented step modules and a master orchestrator (`Main.py`).
 - **Multi-Format Document Ingestion**: Ingests PDF (`.pdf`), Word (`.docx`), Plain Text (`.txt`, `.md`), and Excel/CSV (`.xlsx`, `.csv`) files.
-- **ChromaDB Vector Persistence**: Stores document embeddings locally in ChromaDB for fast similarity retrieval.
+- **ChromaDB Vector Persistence**: Stores document embeddings locally in ChromaDB for fast similarity and MMR retrieval.
 - **Conversational Memory**: Maintains chat history and uses standalone question rephrasing for multi-turn conversations.
 - **Zero-Hallucination Prompting**: System prompt strictly grounds answers in retrieved document context.
-- **Source Attribution**: Displays exact document citations (file name, page number, sheet name, snippet preview) for every response.
+- **System Evaluation & Latency Benchmarking**: Evaluates retrieval precision, latency (ms), and context coverage.
 - **Dual Interfaces**: Includes an interactive **Streamlit Web UI** and a terminal **CLI**.
 
 ---
 
-## 📁 Repository Structure
+## 📁 Repository Structure (OOP Standard)
 
 ```
 Week 3/
-├── app.py                     # Streamlit Interactive Web Application
-├── cli.py                     # Interactive Command-Line Chatbot Interface
-├── main.py                    # Programmatic API & Script Entry Point
-├── requirements.txt           # Python dependencies
+├── Step_1_DocumentIngestion.py   # Class: DocumentIngestionPipeline (Multi-format document ingestor & splitter)
+├── Step_2_EmbeddingFactory.py    # Class: EmbeddingModelFactory (HuggingFace / Gemini / OpenAI embeddings)
+├── Step_3_VectorStoreManager.py   # Class: VectorStoreManager (ChromaDB vector database & search)
+├── Step_4_RAGPipeline.py          # Class: ConversationalRAGPipeline (Memory, Prompts, LLM QA chain)
+├── Step_5_RAGEvaluator.py         # Class: RAGEvaluationPipeline (Latency, Context Relevance & Benchmark evaluation)
+├── Main.py                        # Class: RAGBotMasterPipeline (Master OOP Pipeline Orchestrator)
+├── app.py                         # Streamlit Interactive Web Application
+├── cli.py                         # Interactive Command-Line Chatbot Interface
+├── requirements.txt               # Python dependencies
 ├── .env.example               # Template environment configuration
 ├── README.md                  # Installation & Execution Guide
 ├── TECHNICAL_DOCS.md          # Technical documentation & design rationale
-├── src/                       # Core Source Code Module
+├── src/                       # Core Source Package
 │   ├── config.py              # Configuration & Environment Settings
-│   ├── loaders.py             # Multi-Format Document Ingestor (PDF, DOCX, TXT, Excel/CSV)
-│   ├── embeddings.py          # Embedding Model Factory (HuggingFace / Gemini / OpenAI)
-│   ├── vectorstore.py         # ChromaDB Vector Database Manager
-│   ├── prompts.py             # System Prompts & Prompt Engineering Templates
-│   └── rag_chain.py           # Conversational RAG Pipeline & Memory Chain
+│   ├── loaders.py             # Document Ingestor Implementation
+│   ├── embeddings.py          # Embedding Model Factory Implementation
+│   ├── vectorstore.py         # ChromaDB Vector Store Implementation
+│   ├── prompts.py             # System Prompts & Prompt Templates
+│   ├── rag_chain.py           # RAG Pipeline & Memory Chain Implementation
+│   └── evaluator.py           # Evaluation Metrics & Benchmarking Implementation
 ├── docs/                      # System Diagrams (Mermaid Format)
 │   ├── architecture_diagram.md # System Architecture Diagram
 │   ├── flow_diagram.md         # Document Ingestion & Retrieval Flow Diagram
@@ -41,10 +48,11 @@ Week 3/
 │   ├── sample_notes.txt
 │   ├── sample_data.csv
 │   └── generate_samples.py    # Generator script for docx/xlsx sample files
-└── tests/                     # Unit Tests Suite
+└── tests/                     # OOP Unit Test Suite
     ├── test_loaders.py
     ├── test_vectorstore.py
-    └── test_rag_chain.py
+    ├── test_rag_chain.py
+    └── test_evaluator.py
 ```
 
 ---
@@ -100,13 +108,29 @@ EMBEDDING_MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
 
 ## 💻 Execution Guide
 
-### Option A: Launch Streamlit Web UI (Recommended)
+### Option A: Run Full Master OOP Pipeline (`Main.py`)
+Executes all 5 pipeline steps sequentially (Ingestion -> Embeddings -> VectorStore -> RAG QA -> Evaluation):
+```bash
+python Main.py
+```
+
+### Option B: Run Individual Pipeline Steps (OOP)
+Each step can be executed as a standalone OOP module:
+```bash
+python Step_1_DocumentIngestion.py
+python Step_2_EmbeddingFactory.py
+python Step_3_VectorStoreManager.py
+python Step_4_RAGPipeline.py
+python Step_5_RAGEvaluator.py
+```
+
+### Option C: Launch Streamlit Web UI
 ```bash
 streamlit run app.py
 ```
 Open your browser at `http://localhost:8501`. You can upload documents, process them into ChromaDB, ask questions, inspect source citations, and manage database state visually.
 
-### Option B: Launch Interactive Terminal CLI
+### Option D: Launch Interactive Terminal CLI
 ```bash
 python cli.py
 ```
@@ -115,15 +139,6 @@ Supported CLI commands:
 - `/clear`: Clear the vector database index.
 - `/reset_memory`: Reset chat history.
 - `exit`: Quit the chatbot.
-
-### Option C: Run One-off Ingestion & Query Script
-```bash
-# Ingest a document directory
-python main.py --ingest ./sample_data
-
-# Ask a question
-python main.py --query "Who is the lead RAG architect?"
-```
 
 ---
 
@@ -139,7 +154,7 @@ pytest -v
 ## 📊 System Diagrams
 
 Full Mermaid diagrams are provided in the `docs/` folder:
-1. **[Architecture Diagram](docs/architecture_diagram.md)**: Visualizes the 5-layer modular system design.
+1. **[Architecture Diagram](docs/architecture_diagram.md)**: Visualizes the 5-layer modular OOP system design.
 2. **[Flow Diagram](docs/flow_diagram.md)**: Details sequence steps for document chunking, embedding, vector search, and LLM prompt generation.
 3. **[State Diagram](docs/state_diagram.md)**: Shows state transitions during indexing, retrieval, and memory management.
 

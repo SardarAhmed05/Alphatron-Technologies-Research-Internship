@@ -28,14 +28,14 @@ def create_samples():
     with open(csv_path, "w", encoding="utf-8") as f:
         f.write(
             "EmployeeID,Name,Department,Role,Salary,Project\n"
-            "E101,Alice Smith,Engineering,Lead RAG Architect,120000,Project Antigravity\n"
+            "E101,Alice Smith,Engineering,Lead RAG Architect,120000,Project RAG Chatbot\n"
             "E102,Bob Jones,Data Science,ML Engineer,95000,Project Vector\n"
-            "E103,Carol White,Product,Product Manager,110000,Project Antigravity\n"
+            "E103,Carol White,Product,Product Manager,110000,Project RAG Chatbot\n"
             "E104,David Black,DevOps,Cloud Architect,105000,Project Infrastructure\n"
             "E105,Eva Green,Engineering,Backend Developer,88000,Project Vector\n"
         )
 
-    # 3. DOCX Sample (if docx is installed)
+    # 3. DOCX Sample
     try:
         import docx
         doc = docx.Document()
@@ -49,18 +49,32 @@ def create_samples():
             "outperforming basic keyword TF-IDF searches by 38%."
         )
         doc.save(os.path.join(sample_dir, "sample_doc.docx"))
-    except ImportError:
-        print("docx library not installed yet. Skipping docx file creation.")
+    except Exception as e:
+        print(f"Skipping docx file creation: {e}")
 
-    # 4. Excel Sample (if pandas/openpyxl installed)
+    # 4. Excel Sample
     try:
         import pandas as pd
         df = pd.read_csv(csv_path)
         excel_path = os.path.join(sample_dir, "sample_data.xlsx")
         df.to_excel(excel_path, index=False)
-    except ImportError:
-        print("pandas/openpyxl not installed yet. Skipping excel file creation.")
+    except Exception as e:
+        print(f"Skipping excel file creation: {e}")
+
+    # 5. PDF Sample
+    try:
+        from reportlab.lib.pagesizes import letter
+        from reportlab.pdfgen import canvas
+        pdf_path = os.path.join(sample_dir, "sample_report.pdf")
+        c = canvas.Canvas(pdf_path, pagesize=letter)
+        c.drawString(100, 750, "=== Alphatron RAG Technical PDF Report ===")
+        c.drawString(100, 730, "System Architecture: RAG AI Chatbot using ChromaDB Vector Store.")
+        c.drawString(100, 710, "Supported Document Formats: PDF, DOCX, TXT, Excel/CSV.")
+        c.drawString(100, 690, "Retrieval Engine: LangChain with sentence-transformers and Google Gemini.")
+        c.save()
+    except Exception as e:
+        print(f"Skipping PDF file creation: {e}")
 
 if __name__ == "__main__":
     create_samples()
-    print("Sample datasets generated successfully!")
+    print("All sample datasets (PDF, DOCX, TXT, Excel/CSV) generated successfully!")

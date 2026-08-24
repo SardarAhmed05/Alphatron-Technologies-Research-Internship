@@ -1,9 +1,0 @@
-# Deep Learning Implementations
-
-Implemented different deep learning architectures using TensorFlow/Keras. ANN was implemented using the MNIST dataset with preprocessing, Dense layers, model compilation, training, and evaluation.
-
-CNN was implemented for image classification using convolutional and pooling layers to extract features from MNIST images.
-
-RNN was implemented using the IMDB dataset for sequence classification, including text preprocessing, embeddings, and recurrent layers.
-
-LSTM was implemented as an advanced RNN model using memory-based layers to handle long-term dependencies in sequential data.
