@@ -1,186 +1,191 @@
 # Heart Disease Prediction Using Machine Learning
 **Research Internship - Week 1 Submission**  
-**Sardar Ahmed**  
-**Objective:** Clean OOP ML Architecture, Comprehensive EDA, Data Leakage Prevention & Model Tuning
+**Author:** Sardar Ahmed  
+**Institution/Company:** Alphatron Technologies  
+**Structure:** 11-Step Modular Data Science Pipeline with Master Orchestrator (`Main.py`)
 
 ---
 
 ## 📌 1. Project Overview
-This project develops an end-to-end Machine Learning pipeline for coronary artery disease severity prediction and binary screening based on the multicenter UCI Heart Disease dataset (Cleveland, Hungarian, Switzerland, and Long Beach V cohorts, total $N = 920$ patients).
+This project delivers a modular, end-to-end Machine Learning system for heart disease diagnosis and severity staging using the multicenter UCI Heart Disease cohort (Cleveland, Hungarian, Switzerland, and Long Beach V cohorts, total $N = 920$ patients).
 
-The codebase is built with a **clean, readable Object-Oriented Programming (OOP)** architecture that enforces strict separation of concerns, eliminates data leakage across cross-validation folds, and provides reproducible statistical and visual reporting.
+The repository is structured into **11 sequential, decoupled Python modules (`Step_1_...py` to `Step_11_...py`)** coordinated by a master orchestrator (`Main.py`), featuring dedicated artifact directories, automated SMOTE class balancing, 5-fold cross-validation, and comprehensive model comparison.
 
 ---
 
-## 📂 2. Repository Structure
+## 📂 2. Repository & Output Folder Structure
 
 ```
 Heart-Disease-Prediction/
-├── eda_charts/                            # High-resolution (300 DPI) exploratory analysis figures
+├── Datapreparation/                       # Step 1 Outputs
+│   └── cleaned_heart_disease.csv
+├── EDA/                                   # Step 2 Outputs (Exploratory Figures & Stats)
 │   ├── 01_missing_values_analysis.png
 │   ├── 02_target_distribution.png
-│   ├── 03_demographics_vs_heart_disease.png
-│   ├── 04_chest_pain_analysis.png
-│   ├── 05_clinical_vitals_distributions.png
-│   ├── 06_outliers_and_boxplots.png
 │   ├── 07_correlation_matrix.png
-│   ├── 08_cardiac_tests_angina_ecg_fbs.png
-│   ├── 09_before_vs_after_preprocessing.png
-│   └── confusion_matrix_xgb.png
-├── heart_disease_prediction.py            # Clean, modular OOP pipeline script
-├── heart_disease_prediction.ipynb         # Interactive Jupyter Notebook (EDA + Pipeline + Benchmarks)
-├── EDA_Report.md                          # Full interpreted EDA report with chart takeaways & decisions
-├── generate_eda.py                        # Automated standalone visual EDA generation script
-├── requirements.txt                       # Curated project dependencies
-├── xgboost_model.pkl                      # Serialized best trained pipeline artifact (joblib)
-├── heart_disease_uci.csv                  # Raw dataset
-├── Report.pdf                             # Internship research report
-└── README.md                              # Main documentation & supervisor walkthrough
+│   └── eda_summary_statistics.csv
+├── TransformedData/                       # Steps 3, 4, 5, 8 Outputs
+│   ├── transformed_data.csv
+│   ├── selected_features_data.csv
+│   ├── X_train.csv
+│   ├── X_test.csv
+│   ├── y_train.csv
+│   ├── y_test.csv
+│   ├── X_train_sampled.csv
+│   └── y_train_sampled.csv
+├── Models/                                # Steps 6, 10, 11 Outputs (Serialized Models)
+│   ├── baseline_logistic_regression.pkl
+│   ├── baseline_random_forest.pkl
+│   ├── baseline_xgboost.pkl
+│   ├── tuned_xgboost.pkl
+│   └── best_model.pkl
+├── ModelComparison/                       # Step 11 Outputs (Metrics & Plots)
+│   ├── model_comparison_results.csv
+│   └── model_accuracy_comparison.png
+│
+├── Step_1_DataPreparation.py              # Ingestion, zero-anomaly handling, string cleaning
+├── Step_2_EDA.py                          # Statistical profiling & distribution plots
+├── Step_3_Data_Transformation.py          # Imputation, One-Hot/Binary encoding, StandardScaler
+├── Step_4_FeatureSelection.py             # Feature selection (dropping ca, thal, slope, id)
+├── Step_5_Train_Test_DataSplit.py         # Stratified 80/20 train/test partitioning
+├── Step_6_Model_Training.py               # Fitting baseline LR, RF, and XGBoost models
+├── Step_7_ModelTesting_Performceevaluation.py # Test set evaluation & classification reports
+├── Step_8_DataSampling.py                 # SMOTE class balancing on training data
+├── Step_9_Cross_Validation.py             # 5-Fold Stratified Cross-Validation
+├── Step_10_HyperparameterOptimization.py  # GridSearchCV tuning for XGBoost
+├── Step_11_Model_Comparison.py            # Comparative evaluation & best model export
+├── Main.py                                # Master orchestrator running Steps 1-11
+│
+├── HeartDiseasePrediction.ipynb           # Unified interactive master notebook
+├── flowchart_Task1_Sardar_Ahmed_Heart_disease_prediction.pdf # 11-step pipeline flowchart PDF
+├── Report.pdf                             # Formal research report PDF
+├── requirements.txt                       # Curated environment dependencies
+└── heart_disease_uci.csv                  # Raw dataset
 ```
 
 ---
 
-## 🏗️ 3. OOP Architecture & Class Breakdown
-
-The refactored pipeline avoids monolithic procedural scripts by organizing the machine learning lifecycle into 5 purpose-driven classes:
-
-```mermaid
-classDiagram
-    class DataLoader {
-        +str data_path
-        +load_and_clean() Tuple[pd.DataFrame, pd.Series]
-    }
-    class DataPreprocessor {
-        +list numeric_features
-        +list categorical_features
-        +build_transformer() ColumnTransformer
-    }
-    class ModelTrainer {
-        +ColumnTransformer preprocessor
-        +int random_state
-        +create_pipeline(classifier) Pipeline
-        +tune_xgboost(X_train, y_train) Pipeline
-        +train_random_forest(X_train, y_train) Pipeline
-        +save_model(model, filepath) void
-    }
-    class ModelEvaluator {
-        +evaluate(model, X_test, y_test, model_name, save_cm_path) Dict
-    }
-    class HeartDiseasePipeline {
-        +DataLoader data_loader
-        +ModelEvaluator evaluator
-        +run() void
-    }
-
-    HeartDiseasePipeline --> DataLoader
-    HeartDiseasePipeline --> DataPreprocessor
-    HeartDiseasePipeline --> ModelTrainer
-    HeartDiseasePipeline --> ModelEvaluator
-    ModelTrainer --> DataPreprocessor
-```
-
-### Why this structure was chosen (Supervisor Guide):
-1. **`DataLoader` (Data Ingestion & Integrity)**:
-   - *Responsibility*: Reads the raw CSV, performs biological anomaly correction (e.g., replaces impossible 0 values in `chol` and `trestbps` with `NaN`), drops high-missing/index columns (`id`, `slope`, `ca`, `thal`), and separates features $X$ from target $y$.
-   - *Rationale*: Keeps file I/O and domain-specific raw data validation decoupled from downstream transformations.
-2. **`DataPreprocessor` (Leakage-Free Transformations)**:
-   - *Responsibility*: Builds a `ColumnTransformer` bundling a numeric pipeline (`SimpleImputer(median)` $\rightarrow$ `StandardScaler`) and a categorical pipeline (`SimpleImputer(most_frequent)` $\rightarrow$ `OneHotEncoder(drop='first')`).
-   - *Rationale*: Crucial for scientific validity. Bundling transformers ensures statistical parameters (means, medians, categories) are fitted **only** on training folds, avoiding data leakage during cross-validation.
-3. **`ModelTrainer` (Model Fitting & Hyperparameter Tuning)**:
-   - *Responsibility*: Combines the preprocessor and estimator into an end-to-end `Pipeline`, executes 5-fold Stratified Cross-Validation with `GridSearchCV`, and serializes the best estimator via `joblib`.
-   - *Rationale*: Encapsulates algorithm-specific hyperparameter search spaces and provides an easy interface to benchmark alternative models (e.g. Random Forest vs. XGBoost).
-4. **`ModelEvaluator` (Diagnostic Metrics & Visualization)**:
-   - *Responsibility*: Computes test set Accuracy, Macro F1, Weighted F1, Confusion Matrix, and detailed Classification Reports.
-   - *Rationale*: Separating evaluation logic prevents scoring code from being duplicated across different experiments or models.
-5. **`HeartDiseasePipeline` (High-Level Orchestrator)**:
-   - *Responsibility*: Coordinates the sequential execution from ingestion to final artifact serialization.
-   - *Rationale*: Enables one-line execution (`pipeline.run()`) from scripts, notebooks, or external controllers.
-
----
-
-## 🔄 4. End-to-End Machine Learning Flowchart
+## 🔄 3. 11-Step Machine Learning Pipeline
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│             Raw UCI Dataset (920 rows, 16 cols)          │
+│ Step 1: Data Preparation                                 │
+│  - Load UCI dataset, handle 0s in [chol, trestbps]       │
+│  - Export: 'Datapreparation/cleaned_heart_disease.csv'   │
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼
 ┌──────────────────────────────────────────────────────────┐
-│ 1. DataLoader: Clean Anomaly 0s, Drop [id, ca, thal, slope]│
+│ Step 2: Exploratory Data Analysis (EDA)                  │
+│  - Profiling, missingness, target balance, correlations  │
+│  - Export: 'EDA/' charts & summary statistics            │
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼
 ┌──────────────────────────────────────────────────────────┐
-│ 2. Stratified Train/Test Split (80% Train / 20% Test)    │
+│ Step 3: Data Transformation                              │
+│  - Median/Mode Imputation, OHE, StandardScaler           │
+│  - Export: 'TransformedData/transformed_data.csv'        │
+└────────────────────────────┬─────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────┐
+│ Step 4: Feature Selection                                │
+│  - Drop non-predictive [id] & high-missing [ca,thal,slope]│
+│  - Export: 'TransformedData/selected_features_data.csv'  │
+└────────────────────────────┬─────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────┐
+│ Step 5: Stratified Train / Test Split                    │
+│  - 80% Train (736 samples) / 20% Test (184 samples)      │
+│  - Export: X_train, X_test, y_train, y_test              │
 └──────────────┬─────────────────────────────┬─────────────┘
                │                             │
                ▼ (Train Set)                 ▼ (Test Set - Unseen)
 ┌──────────────────────────────┐             │
-│ 3. DataPreprocessor Pipeline │             │
-│  - Numeric: Median + Scaler  │             │
-│  - Categorical: Mode + OHE   │             │
+│ Step 6: Baseline Training    │             │
+│  - Fit LR, RF, XGBoost       │             │
+│  - Export: 'Models/'         │             │
 └──────────────┬───────────────┘             │
                │                             │
                ▼                             │
 ┌──────────────────────────────┐             │
-│ 4. Stratified 5-Fold GridCV  │             │
-│  - XGBoost Parameter Tuning  │             │
-│  - Random Forest Benchmark   │             │
+│ Step 7: Baseline Testing     │             │
+│  - Accuracy, F1, Report      │             │
 └──────────────┬───────────────┘             │
                │                             │
-               ▼ (Fitted Pipeline)           │
+               ▼                             │
+┌──────────────────────────────┐             │
+│ Step 8: Data Sampling (SMOTE)│             │
+│  - Balance minority classes  │             │
+│  - Export: X_train_sampled   │             │
+└──────────────┬───────────────┘             │
+               │                             │
+               ▼                             │
+┌──────────────────────────────┐             │
+│ Step 9: 5-Fold Cross-Val     │             │
+│  - StratifiedKFold checking  │             │
+└──────────────┬───────────────┘             │
+               │                             │
+               ▼                             │
+┌──────────────────────────────┐             │
+│ Step 10: Grid Search Tuning  │             │
+│  - Tune XGBoost depth & lr   │             │
+│  - Export: 'tuned_xgboost'   │             │
+└──────────────┬───────────────┘             │
+               │                             │
+               ▼                             ▼
 ┌────────────────────────────────────────────┴─────────────┐
-│ 5. ModelEvaluator: Accuracy, Macro F1, Weighted F1, CM   │
-└────────────────────────────┬─────────────────────────────┘
-                             │
-                             ▼
-┌──────────────────────────────────────────────────────────┐
-│ 6. Model Serialization: Export 'xgboost_model.pkl'       │
+│ Step 11: Model Comparison & Selection                    │
+│  - Compare all models on unseen test data                │
+│  - Export: 'model_comparison_results.csv',               │
+│            'model_accuracy_comparison.png',              │
+│            'Models/best_model.pkl'                       │
 └──────────────────────────────────────────────────────────┘
 ```
 
 ---
+## 📊 4. Experimental Results
 
-## 📊 5. Experimental Results & Benchmark
-
-### Multiclass Classification (5-Class Severity: 0 to 4)
-| Model | Test Accuracy | Macro F1-Score | Weighted F1-Score | Best Parameters |
-| :--- | :---: | :---: | :---: | :--- |
-| **Random Forest Baseline** | 57.61% | 0.4454 | 0.6035 | `n_estimators=150, max_depth=5, class_weight='balanced'` |
-| **Tuned XGBoost Pipeline** | **58.70%** | **0.3521** | **0.5719** | `max_depth=4, learning_rate=0.1, n_estimators=100, subsample=0.8` |
-
-### Binary Classification Benchmark (0 = Healthy vs 1 = Disease)
-| Model | Test Accuracy | Macro F1-Score | Weighted F1-Score |
-| :--- | :---: | :---: | :---: |
-| **Binary XGBoost Pipeline** | **83.15%** | **0.8290** | **0.8310** |
-
-> **Clinical Insight:** While 5-class staging is constrained by extreme sample sparsity in Stage 4 ($N=28, 3.0\%$), the pipeline achieves **$\approx 83.2\%$ diagnostic accuracy** for clinical disease screening (presence vs. absence).
+| Model Architecture | Training Strategy | Test Accuracy | Macro F1 | Weighted F1 |
+| :--- | :--- | :---: | :---: | :---: |
+| **Logistic Regression (Baseline)** | Original Split | **60.87%** | **0.3662** | **0.5801** |
+| **Random Forest (Baseline)** | Original Split | 57.07% | 0.2752 | 0.5077 |
+| **XGBoost (Baseline)** | Original Split | 60.33% | 0.3855 | 0.5859 |
+| **XGBoost (Tuned + SMOTE)** | SMOTE Resampled | 56.52% | **0.4173** | 0.5787 |
 
 ---
 
-## 🛠️ 6. Quick Start & Execution
+## 🛠️ 5. Quick Start & Execution
 
 ### 1. Installation
-Clone repository and install curated requirements:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Generate Full Visual EDA & Charts
+### 2. Run Entire 11-Step Pipeline in One Command
 ```bash
-python generate_eda.py
-```
-*(View generated charts and detailed clinical interpretations in [`EDA_Report.md`](EDA_Report.md))*
-
-### 3. Run OOP Machine Learning Pipeline
-```bash
-python heart_disease_prediction.py
+python Main.py
 ```
 
-### 4. Interactive Exploration
+### 3. Run Individual Steps Separately
+```bash
+python Step_1_DataPreparation.py
+python Step_2_EDA.py
+python Step_3_Data_Transformation.py
+python Step_4_FeatureSelection.py
+python Step_5_Train_Test_DataSplit.py
+python Step_6_Model_Training.py
+python Step_7_ModelTesting_Performceevaluation.py
+python Step_8_DataSampling.py
+python Step_9_Cross_Validation.py
+python Step_10_HyperparameterOptimization.py
+python Step_11_Model_Comparison.py
+```
+
+### 4. Interactive Master Notebook
 Launch Jupyter Notebook to run step-by-step EDA and benchmarks:
 ```bash
-jupyter notebook heart_disease_prediction.ipynb
+jupyter notebook HeartDiseasePrediction.ipynb
 ```
-

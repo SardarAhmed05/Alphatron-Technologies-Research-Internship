@@ -13,7 +13,7 @@ This document provides a rigorous exploratory data analysis of the 920-patient m
 ## 2. Visual Analyses, Clinical Interpretations & Data Decisions
 
 ### Chart 1: Missing Values & Missingness Pattern Analysis
-![Missing Values Analysis](eda_charts/01_missing_values_analysis.png)
+![Missing Values Analysis](EDA/01_missing_values_analysis.png)
 
 - **What it shows**:
   - Three features exhibit extreme missingness exceeding the 30% threshold: `ca` (number of major vessels colored by fluoroscopy) is missing **66.4%** (611/920), `thal` (thalassemia) is missing **52.8%** (486/920), and `slope` (ST segment slope) is missing **33.6%** (309/920).
@@ -30,7 +30,7 @@ This document provides a rigorous exploratory data analysis of the 920-patient m
 ---
 
 ### Chart 2: Target Variable Distribution (Multiclass vs. Binary)
-![Target Variable Distribution](eda_charts/02_target_distribution.png)
+![Target Variable Distribution](EDA/02_target_distribution.png)
 
 - **What it shows**:
   - **Multiclass (`num`)**: Class 0 (Healthy) represents **44.7%** (411 patients), Class 1 represents **28.8%** (265), Class 2 represents **11.8%** (109), Class 3 represents **11.6%** (107), and Class 4 (Severe Disease) represents only **3.0%** (28 patients).
@@ -46,7 +46,7 @@ This document provides a rigorous exploratory data analysis of the 920-patient m
 ---
 
 ### Chart 3: Demographic Factors (Age & Sex vs. Heart Disease)
-![Demographics vs Heart Disease](eda_charts/03_demographics_vs_heart_disease.png)
+![Demographics vs Heart Disease](EDA/03_demographics_vs_heart_disease.png)
 
 - **What it shows**:
   - **Age Distribution**: Patients diagnosed with heart disease have a higher median age ($\approx 57$ years) compared to healthy individuals ($\approx 51$ years). Disease probability rises sharply after age 50.
@@ -61,7 +61,7 @@ This document provides a rigorous exploratory data analysis of the 920-patient m
 ---
 
 ### Chart 4: Chest Pain Type (`cp`) vs. Disease Severity
-![Chest Pain Type Analysis](eda_charts/04_chest_pain_analysis.png)
+![Chest Pain Type Analysis](EDA/04_chest_pain_analysis.png)
 
 - **What it shows**:
   - Asymptomatic chest pain is the most frequent presentation (**54.0%**, 496 patients), followed by non-anginal pain (**22.2%**, 204), atypical angina (**19.0%**, 174), and typical angina (**4.8%**, 46).
@@ -75,7 +75,7 @@ This document provides a rigorous exploratory data analysis of the 920-patient m
 ---
 
 ### Chart 5: Clinical Vitals Distributions & Invalid Zero-Value Detection
-![Clinical Vitals Distributions](eda_charts/05_clinical_vitals_distributions.png)
+![Clinical Vitals Distributions](EDA/05_clinical_vitals_distributions.png)
 
 - **What it shows**:
   - **Resting Blood Pressure (`trestbps`)**: Follows a roughly normal distribution centered at 130 mm Hg, with 1 record recorded as `0` (physiologically impossible in a living patient).
@@ -92,7 +92,7 @@ This document provides a rigorous exploratory data analysis of the 920-patient m
 ---
 
 ### Chart 6: Outlier & Distribution Boxplots Across Diagnoses
-![Outlier Boxplots](eda_charts/06_outliers_and_boxplots.png)
+![Outlier Boxplots](EDA/06_outliers_and_boxplots.png)
 
 - **What it shows**:
   - **Max Heart Rate (`thalch`)**: Heart disease patients achieve significantly lower peak heart rates during stress testing (median $\approx 125$ bpm) compared to healthy subjects (median $\approx 153$ bpm).
@@ -107,7 +107,7 @@ This document provides a rigorous exploratory data analysis of the 920-patient m
 ---
 
 ### Chart 7: Pearson Correlation Heatmap
-![Correlation Matrix](eda_charts/07_correlation_matrix.png)
+![Correlation Matrix](EDA/07_correlation_matrix.png)
 
 - **What it shows**:
   - **`oldpeak`** has the strongest positive correlation with disease presence ($r = +0.43$) and multiclass severity ($r = +0.40$).
@@ -122,7 +122,7 @@ This document provides a rigorous exploratory data analysis of the 920-patient m
 ---
 
 ### Chart 8: Cardiac Tests & Diagnostic Markers (`exang`, `restecg`, `fbs`)
-![Diagnostic Tests](eda_charts/08_cardiac_tests_angina_ecg_fbs.png)
+![Diagnostic Tests](EDA/08_cardiac_tests_angina_ecg_fbs.png)
 
 - **What it shows**:
   - **Exercise-Induced Angina (`exang`)**: **75.4%** of patients experiencing exercise angina test positive for heart disease, compared to only **33.1%** of patients without exercise angina.
@@ -136,7 +136,7 @@ This document provides a rigorous exploratory data analysis of the 920-patient m
 ---
 
 ### Chart 9: Before vs. After Preprocessing & Imputation Comparison
-![Before vs After Preprocessing](eda_charts/09_before_vs_after_preprocessing.png)
+![Before vs After Preprocessing](EDA/09_before_vs_after_preprocessing.png)
 
 - **What it shows**:
   - **Serum Cholesterol (`chol`)**: The raw distribution had a massive artificial peak at 0 mg/dl (172 unrecorded records). After replacing 0 with `NaN` and applying median/MICE imputation, the distribution is restored to a realistic physiological bell curve centered around 245 mg/dl without losing 172 patient rows.
