@@ -1,0 +1,34 @@
+[
+  {
+    "Product Name": "QuantumBook Pro 16",
+    "Category": "Laptops",
+    "Original Price": ",499.00",
+    "Discounted Price": ",199.00",
+    "Stock Units": "42",
+    "Customer Rating": "4.9 / 5.0 (1,280 reviews)"
+  },
+  {
+    "Product Name": "NeuralEar Buds Ultra",
+    "Category": "Audio",
+    "Original Price": ".00",
+    "Discounted Price": ".00",
+    "Stock Units": "150",
+    "Customer Rating": "4.7 / 5.0 (890 reviews)"
+  },
+  {
+    "Product Name": "VisionMatrix VR Headset",
+    "Category": "Wearables",
+    "Original Price": ",199.00",
+    "Discounted Price": ".00",
+    "Stock Units": "18",
+    "Customer Rating": "4.8 / 5.0 (420 reviews)"
+  },
+  {
+    "Product Name": "PulseSmart Health Ring",
+    "Category": "Wearables",
+    "Original Price": ".00",
+    "Discounted Price": ".00",
+    "Stock Units": "85",
+    "Customer Rating": "4.6 / 5.0 (610 reviews)"
+  }
+]
